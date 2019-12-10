@@ -9,7 +9,6 @@ const Box = ({ id,open,onClick, hidden }) => {
 
   return (
     <div onClick={onClick} className={`${myClasses.open} ${myClasses.hidden}`}>
-      {/* <img src={`img/${id}.jpg`} alt='' /> */}
       <div className="rotate-block">{`${id}`}</div>
     </div>
   );

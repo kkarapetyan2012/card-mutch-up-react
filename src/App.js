@@ -6,108 +6,79 @@ import './App.css';
 const App = () => {
 
   const [boxes, setBoxes] = useState([]);
-  const [open, setOpen] = useState({})
-  const [hidden, setHidden] = useState({hidden: false})
-  const [first, setFirst] = useState({first: false, index: false})
-  const [count, setCount] = useState(0);
+  const [open, setOpen] = useState({});
+  const [hidden, setHidden] = useState({});
+  const [first, setFirst] = useState({first: false, index: false});
+  const [notClickable, setNotClickable] = useState(false);
+  const [count, setCount] = useState({steps: 0, trueSteps: 0});
 
-
-  const handleClick = (index, el) => {
-    
-    console.log(index, el);
-    
+  const handleClick = (index, el) => {   
     if(!first.first) {
       console.log("first");
-      setFirst({first: el, index: index})
-      setOpen({...open, [index]: true})
-      return
+      setFirst({first: el, index: index});
+      setOpen({...open, [index]: true});
     }
-    else if (first.first === el) {
-      setFirst({first: false, index: false})
-      setOpen({ ...open, [index]: true, [first.index]: true})
-      setHidden()
-      // setTimeout(() => {
-      //   setBoxes(boxes.filter(item => item !== el))
-      // }, 600)
+    else if (first.first === el && first.index !== index) {
+      setNotClickable(true)
+      setCount({...count, steps: count.steps + 1, trueSteps: count.trueSteps + 1});
+      setOpen({ ...open, [index]: true, [first.index]: true});
       setTimeout(() => {
+        if(count.trueSteps === 7) {
+          alert(`Congratulations you WON! Used steps: ${count.steps + 1}`);
+        }
         setHidden({...hidden, [index]: true, [first.index]: true})
+        setNotClickable(false)
       }, 600)
-      console.log("same"); 
-      return   
+      setFirst({first: false, index: false});
+      console.log("same");   
     }
-    else {    
-      setOpen({ ...open, [index]: true})
-      setTimeout(() => {
-        setOpen({ ...open, [index]: false})
-      }, 600);
-      setFirst({first: false, index: false})
-      console.log("second");
+    else if(first.index !== index) {
+        setNotClickable(true);
+        setOpen({ ...open, [index]: true});
+        setTimeout(() => {
+          setOpen({ ...open, [first.index]: false, [index]: false});
+          setNotClickable(false);
+        }, 600);
+        setFirst({first: false, index: false});
+        setCount({...count, steps: count.steps + 1});
+        console.log("different");
     }
-    setTimeout(() => {
-      setOpen({...open, [first.index]: false})
-    }, 600)
-  }
+  };
+
+  const duplicateCard = (card) => {
+    return card.reduce((preValue, current) => {
+      return preValue.concat([current, current])
+    },[]);
+  };
+
+  const shuffleArray = (arr = []) => {
+    return arr.sort(() => Math.random() - 0.5);
+  };
   
-  const begin = (num = 4) => {
-    let arr = []
-    let open = []
-    for (let i = 0; i < num * num / 2; i++) {
-      arr.push(i)
-    }
-    
-    const duplicateCard = (card) => {
-      return card.reduce((preValue, current, index, array) => {
-        return preValue.concat([current, current])
-      },[]);
-    };
-
-    const shuffleArray = (arr = []) => {
-      return arr.sort(() => Math.random() - 0.5);
-    }
-    
-    let bigArr = shuffleArray(duplicateCard([1,2,3,4,5,6,7,8]))  
-
-    open.length = bigArr.length;
-    setOpen(open)
-    setBoxes(bigArr)
-  }
+  let bigArr = shuffleArray(duplicateCard([1,2,3,4,5,6,7,8]));
 
   useEffect(() => {
-    begin();
+    setBoxes(bigArr);
   }, []);
 
   const reset = () => {
-    setFirst(null)
-    setTimeout(() => {
-      begin()
-    }, 300); 
-  }
-
-  
-    const f1 = (index, el) => {
-      return handleClick(index, el)
-    };
-    const f2 = (count) => {
-      return setCount(count+1)
-      
-    };
-    console.log('count: ' + count)
-  
+    window.location.reload();
+  };
+  console.log("RENDER");
 
   return (
     <div className="app">
      <div className="container">
        <div className="row">
           <div className="col-lg-12 col-md-12 col-cm-12 col-12">
-            <div>Step: { count }</div>
+            <div>Step: { count.steps }</div>
             <div className={`wrap ${Math.sqrt(boxes.length)}`}>
               {boxes && boxes.map((el, index) => <Box
                 key={index}
                 id={el}
                 open={open[index]}
                 hidden={hidden[index]}
-                count={count}
-                onClick={() => {f1(index, el); f2(count)}}
+                onClick={() => notClickable ? {} : handleClick(index, el)}
               />)}
             </div>
             <button onClick={reset}>Reset</button>
