@@ -55,10 +55,10 @@ const App = () => {
     return arr.sort(() => Math.random() - 0.5);
   };
   
-  let bigArr = shuffleArray(duplicateCard([1,2,3,4,5,6,7,8]));
+  let bigArray = shuffleArray(duplicateCard([1,2,3,4,5,6,7,8]));
 
   useEffect(() => {
-    setBoxes(bigArr);
+    setBoxes(bigArray);
   }, []);
 
   const reset = () => {
@@ -70,8 +70,8 @@ const App = () => {
     <div className="app">
      <div className="container">
        <div className="row">
-          <div className="col-lg-12 col-md-12 col-cm-12 col-12">
-            <div>Step: { count.steps }</div>
+          <div className="col-lg-8 offset-md-2 col-md-8 offset-md-2 col-cm-12 offset-cm-0 col-12 offset-0">
+            <div className="alert alert-secondary step" role="alert">Step: { count.steps }</div>
             <div className={`wrap ${Math.sqrt(boxes.length)}`}>
               {boxes && boxes.map((el, index) => <Box
                 key={index}
@@ -81,7 +81,7 @@ const App = () => {
                 onClick={() => notClickable ? {} : handleClick(index, el)}
               />)}
             </div>
-            <button onClick={reset}>Reset</button>
+            <button className="btn btn-dark mt-4" onClick={reset}>Reset</button>
           </div>
         </div>
        </div>
